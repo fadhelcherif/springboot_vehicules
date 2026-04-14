@@ -28,6 +28,13 @@ public class DashboardController {
         this.dashboardService = dashboardService;
     }
 
+    @GetMapping("/ping")
+    @Operation(summary = "Ping dashboard", description = "Verifie rapidement que le controller dashboard est disponible")
+    @ApiResponse(responseCode = "200", description = "Controller disponible")
+    public String ping() {
+        return "dashboard-ok";
+    }
+
     @GetMapping("/fuel-costs")
     @Operation(summary = "Cout carburant par vehicule", description = "Retourne le cout total de carburant agrege par vehicule")
     @ApiResponse(responseCode = "200", description = "Indicateurs carburant", content = @Content(array = @ArraySchema(schema = @Schema(implementation = FuelCostByVehiculeResponse.class))))

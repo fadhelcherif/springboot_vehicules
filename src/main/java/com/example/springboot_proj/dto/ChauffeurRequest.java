@@ -9,7 +9,9 @@ public record ChauffeurRequest(
         @Schema(description = "Numero de permis", example = "B-987654")
         String permis,
         @Schema(description = "Nombre d'annees d'experience", example = "6")
-        Integer experience
+        Integer experience,
+        @Schema(description = "Image du chauffeur en format Base64", example = "data:image/jpeg;base64,...")
+        String imageData
 ) {
 }
 

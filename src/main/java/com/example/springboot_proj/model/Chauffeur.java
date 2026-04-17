@@ -37,6 +37,9 @@ public class Chauffeur {
     @Column(nullable = false)
     private Integer experience;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String imageData;
+
     @OneToMany(mappedBy = "chauffeur", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mission> missions = new ArrayList<>();
 }

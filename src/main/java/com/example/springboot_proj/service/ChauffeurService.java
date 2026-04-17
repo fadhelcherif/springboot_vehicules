@@ -49,6 +49,13 @@ public class ChauffeurService {
         chauffeurRepository.deleteById(id);
     }
 
+    @Transactional
+    public ChauffeurResponse updateImage(Long id, String imageData) {
+        Chauffeur chauffeur = findEntity(id);
+        chauffeur.setImageData(imageData);
+        return toResponse(chauffeurRepository.save(chauffeur));
+    }
+
     public Chauffeur findEntity(Long id) {
         return chauffeurRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Chauffeur introuvable avec id=" + id));
@@ -58,6 +65,7 @@ public class ChauffeurService {
         chauffeur.setNom(request.nom());
         chauffeur.setPermis(request.permis());
         chauffeur.setExperience(request.experience());
+        chauffeur.setImageData(request.imageData());
     }
 
     private ChauffeurResponse toResponse(Chauffeur chauffeur) {
@@ -65,7 +73,8 @@ public class ChauffeurService {
                 chauffeur.getId(),
                 chauffeur.getNom(),
                 chauffeur.getPermis(),
-                chauffeur.getExperience()
+                chauffeur.getExperience(),
+                chauffeur.getImageData()
         );
     }
 }

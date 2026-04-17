@@ -1,0 +1,143 @@
+{
+  "exemples_chauffeur": {
+    "creation_sans_image": {
+      "method": "POST",
+      "url": "/api/chauffeurs",
+      "body": {
+        "nom": "Ahmed Ben Salah",
+        "permis": "B-987654",
+        "experience": 6,
+        "imageData": null
+      },
+      "description": "Crée un chauffeur sans image"
+    },
+    "creation_avec_image": {
+      "method": "POST",
+      "url": "/api/chauffeurs",
+      "body": {
+        "nom": "Ahmed Ben Salah",
+        "permis": "B-987654",
+        "experience": 6,
+        "imageData": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAA//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAv/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAgEDEQA/AIeAD/9k="
+      },
+      "description": "Crée un chauffeur avec image en Base64"
+    },
+    "mise_a_jour_sans_image": {
+      "method": "PUT",
+      "url": "/api/chauffeurs/1",
+      "body": {
+        "nom": "Ahmed Ben Salah Updated",
+        "permis": "B-987654",
+        "experience": 7,
+        "imageData": null
+      },
+      "description": "Met à jour un chauffeur sans modifier l'image"
+    },
+    "upload_image": {
+      "method": "POST",
+      "url": "/api/chauffeurs/1/image",
+      "contentType": "multipart/form-data",
+      "parameters": {
+        "file": "photo.jpg"
+      },
+      "description": "Ajoute une image à un chauffeur existant"
+    },
+    "recuperer_chauffeur": {
+      "method": "GET",
+      "url": "/api/chauffeurs/1",
+      "response": {
+        "id": 1,
+        "nom": "Ahmed Ben Salah",
+        "permis": "B-987654",
+        "experience": 6,
+        "imageData": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAA//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAv/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAgEDEQA/AIeAD/9k="
+      },
+      "description": "Récupère les détails du chauffeur avec l'image"
+    }
+  },
+  "exemples_vehicule": {
+    "creation_sans_image": {
+      "method": "POST",
+      "url": "/api/vehicules",
+      "body": {
+        "immatriculation": "123-TN-456",
+        "modele": "Toyota Hilux",
+        "type": "Pickup",
+        "kilometrage": 125000,
+        "statut": "EN_SERVICE",
+        "imageData": null
+      },
+      "description": "Crée un véhicule sans image"
+    },
+    "creation_avec_image": {
+      "method": "POST",
+      "url": "/api/vehicules",
+      "body": {
+        "immatriculation": "123-TN-456",
+        "modele": "Toyota Hilux",
+        "type": "Pickup",
+        "kilometrage": 125000,
+        "statut": "EN_SERVICE",
+        "imageData": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAA//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAv/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAgEDEQA/AIeAD/9k="
+      },
+      "description": "Crée un véhicule avec image en Base64"
+    },
+    "mise_a_jour_sans_image": {
+      "method": "PUT",
+      "url": "/api/vehicules/1",
+      "body": {
+        "immatriculation": "123-TN-456",
+        "modele": "Toyota Hilux 2024",
+        "type": "Pickup",
+        "kilometrage": 130000,
+        "statut": "EN_SERVICE",
+        "imageData": null
+      },
+      "description": "Met à jour un véhicule sans modifier l'image"
+    },
+    "upload_image": {
+      "method": "POST",
+      "url": "/api/vehicules/1/image",
+      "contentType": "multipart/form-data",
+      "parameters": {
+        "file": "vehicule.jpg"
+      },
+      "description": "Ajoute une image à un véhicule existant"
+    },
+    "recuperer_vehicule": {
+      "method": "GET",
+      "url": "/api/vehicules/1",
+      "response": {
+        "id": 1,
+        "immatriculation": "123-TN-456",
+        "modele": "Toyota Hilux",
+        "type": "Pickup",
+        "kilometrage": 125000,
+        "statut": "EN_SERVICE",
+        "imageData": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAA//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAv/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAgEDEQA/AIeAD/9k="
+      },
+      "description": "Récupère les détails du véhicule avec l'image"
+    }
+  },
+  "notes_importantes": {
+    "format_base64": "Toutes les images doivent être en format Base64 avec le préfixe 'data:image/[type];base64,' (optionnel)",
+    "types_image_supportes": [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/bmp"
+    ],
+    "taille_maximale": "Limité par la taille MAX_ALLOWED_PACKET de MySQL (par défaut 4MB)",
+    "champ_obligatoire": false,
+    "null_remplace_image": false,
+    "description": "imageData est un champ optionnel. En mettant null dans un PUT, l'image précédente est conservée"
+  },
+  "curl_examples": {
+    "creer_chauffeur_avec_image": "curl -X POST http://localhost:8080/api/chauffeurs -H 'Content-Type: application/json' -d '{\"nom\":\"Ahmed\",\"permis\":\"B-123\",\"experience\":5,\"imageData\":\"data:image/jpeg;base64,...\"}'",
+    "upload_image_chauffeur": "curl -X POST http://localhost:8080/api/chauffeurs/1/image -F 'file=@/path/to/photo.jpg'",
+    "creer_vehicule_avec_image": "curl -X POST http://localhost:8080/api/vehicules -H 'Content-Type: application/json' -d '{\"immatriculation\":\"123-TN\",\"modele\":\"Hilux\",\"type\":\"Pickup\",\"kilometrage\":100000,\"statut\":\"EN_SERVICE\",\"imageData\":\"data:image/jpeg;base64,...\"}'",
+    "upload_image_vehicule": "curl -X POST http://localhost:8080/api/vehicules/1/image -F 'file=@/path/to/vehicle.jpg'"
+  }
+}
+

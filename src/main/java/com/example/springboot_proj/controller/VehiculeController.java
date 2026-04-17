@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,11 +20,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -92,6 +96,32 @@ public class VehiculeController {
             @Parameter(description = "Seuil de kilometrage (par defaut 10000)", example = "10000")
             @RequestParam(required = false) Long thresholdKm) {
         return vehiculeService.getMaintenanceAlerts(thresholdKm);
+    }
+
+    @PostMapping(value = "/{id}/image", consumes = "multipart/form-data")
+    @Operation(
+        summary = "Uploader une image pour le véhicule",
+        description = "Permet de charger une image (photo du véhicule) pour un véhicule existant."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                responseCode = "200",
+                description = "Image uploadée avec succès",
+                content = @Content(schema = @Schema(implementation = VehiculeResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Véhicule introuvable"),
+            @ApiResponse(responseCode = "400", description = "Fichier invalide")
+    })
+    public ResponseEntity<VehiculeResponse> uploadImage(
+            @Parameter(description = "ID du véhicule", example = "1")
+            @PathVariable Long id,
+            @Parameter(
+                description = "Fichier image",
+                content = @Content(mediaType = "application/octet-stream", schema = @Schema(type = "string", format = "binary"))
+            )
+            @RequestPart("file") MultipartFile file) throws IOException {
+        String imageData = Base64.getEncoder().encodeToString(file.getBytes());
+        return ResponseEntity.ok(vehiculeService.updateImage(id, imageData));
     }
 }
 

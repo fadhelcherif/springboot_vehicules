@@ -13,7 +13,9 @@ public record VehiculeRequest(
         @Schema(description = "Kilometrage actuel", example = "125000")
         Long kilometrage,
         @Schema(description = "Statut operationnel", example = "EN_SERVICE")
-        String statut
+        String statut,
+        @Schema(description = "Image du vehicule en format Base64", example = "data:image/jpeg;base64,...")
+        String imageData
 ) {
 }
 

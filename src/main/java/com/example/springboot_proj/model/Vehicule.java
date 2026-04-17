@@ -43,6 +43,9 @@ public class Vehicule {
     @Column(nullable = false, length = 30)
     private String statut;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String imageData;
+
     @OneToMany(mappedBy = "vehicule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mission> missions = new ArrayList<>();
 

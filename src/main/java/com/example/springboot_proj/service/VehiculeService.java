@@ -50,6 +50,13 @@ public class VehiculeService {
         vehiculeRepository.deleteById(id);
     }
 
+    @Transactional
+    public VehiculeResponse updateImage(Long id, String imageData) {
+        Vehicule vehicule = findEntity(id);
+        vehicule.setImageData(imageData);
+        return toResponse(vehiculeRepository.save(vehicule));
+    }
+
     public List<MaintenanceAlertResponse> getMaintenanceAlerts(Long thresholdKm) {
         long seuil = thresholdKm == null ? 10000L : thresholdKm;
         if (seuil < 0) {
@@ -80,6 +87,7 @@ public class VehiculeService {
         vehicule.setType(request.type());
         vehicule.setKilometrage(request.kilometrage());
         vehicule.setStatut(request.statut());
+        vehicule.setImageData(request.imageData());
     }
 
     private VehiculeResponse toResponse(Vehicule vehicule) {
@@ -89,7 +97,8 @@ public class VehiculeService {
                 vehicule.getModele(),
                 vehicule.getType(),
                 vehicule.getKilometrage(),
-                vehicule.getStatut()
+                vehicule.getStatut(),
+                vehicule.getImageData()
         );
     }
 }

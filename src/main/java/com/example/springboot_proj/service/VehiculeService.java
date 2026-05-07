@@ -1,12 +1,15 @@
 package com.example.springboot_proj.service;
 
+import com.example.springboot_proj.converter.VehiculeConverter;
 import com.example.springboot_proj.dto.MaintenanceAlertResponse;
-import com.example.springboot_proj.dto.VehiculeRequest;
-import com.example.springboot_proj.dto.VehiculeResponse;
-import com.example.springboot_proj.model.Vehicule;
+import com.example.springboot_proj.dto.VehiculeDTO;
+import com.example.springboot_proj.entity.Vehicule;
 import com.example.springboot_proj.repository.VehiculeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -14,53 +17,75 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class VehiculeService {
 
-    private final VehiculeRepository vehiculeRepository;
+    @Autowired
+    private VehiculeRepository vehiculeRepository;
 
-    public VehiculeService(VehiculeRepository vehiculeRepository) {
-        this.vehiculeRepository = vehiculeRepository;
+    @Autowired
+    private VehiculeConverter vehiculeConverter;
+
+    public List<VehiculeDTO> getAll() {
+        return vehiculeConverter.toDtoList(vehiculeRepository.findAll());
+    }
+
+    public VehiculeDTO getById(Long id) {
+        Vehicule vehicule = vehiculeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Vehicule introuvable avec id=" + id));
+        return vehiculeConverter.toDto(vehicule);
     }
 
     @Transactional
-    public VehiculeResponse create(VehiculeRequest request) {
-        Vehicule vehicule = new Vehicule();
-        applyRequest(vehicule, request);
-        return toResponse(vehiculeRepository.save(vehicule));
-    }
-
-    public List<VehiculeResponse> getAll() {
-        return vehiculeRepository.findAll().stream().map(this::toResponse).toList();
-    }
-
-    public VehiculeResponse getById(Long id) {
-        return toResponse(findEntity(id));
+    public VehiculeDTO create(VehiculeDTO dto) {
+        if (vehiculeRepository.existsByImmatriculation(dto.getImmatriculation())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Un vehicule avec l'immatriculation " + dto.getImmatriculation() + " existe deja");
+        }
+        Vehicule vehicule = vehiculeConverter.fromDto(dto);
+        if (vehicule.getStatut() == null) {
+            vehicule.setStatut("DISPONIBLE");
+        }
+        return vehiculeConverter.toDto(vehiculeRepository.save(vehicule));
     }
 
     @Transactional
-    public VehiculeResponse update(Long id, VehiculeRequest request) {
-        Vehicule vehicule = findEntity(id);
-        applyRequest(vehicule, request);
-        return toResponse(vehiculeRepository.save(vehicule));
+    public VehiculeDTO update(Long id, VehiculeDTO dto) {
+        Vehicule vehicule = vehiculeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Vehicule introuvable avec id=" + id));
+        vehicule.setImmatriculation(dto.getImmatriculation());
+        vehicule.setModele(dto.getModele());
+        vehicule.setType(dto.getType());
+        vehicule.setKilometrage(dto.getKilometrage());
+        vehicule.setStatut(dto.getStatut());
+        vehicule.setImageData(dto.getImageData());
+        return vehiculeConverter.toDto(vehiculeRepository.save(vehicule));
     }
 
     @Transactional
     public void delete(Long id) {
         if (!vehiculeRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Vehicule introuvable avec id=" + id);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Vehicule introuvable avec id=" + id);
         }
         vehiculeRepository.deleteById(id);
     }
 
     @Transactional
-    public VehiculeResponse updateImage(Long id, String imageData) {
-        Vehicule vehicule = findEntity(id);
+    public VehiculeDTO updateImage(Long id, String imageData) {
+        Vehicule vehicule = vehiculeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Vehicule introuvable avec id=" + id));
         vehicule.setImageData(imageData);
-        return toResponse(vehiculeRepository.save(vehicule));
+        return vehiculeConverter.toDto(vehiculeRepository.save(vehicule));
     }
 
     public List<MaintenanceAlertResponse> getMaintenanceAlerts(Long thresholdKm) {
         long seuil = thresholdKm == null ? 10000L : thresholdKm;
         if (seuil < 0) {
-            throw new IllegalArgumentException("Le seuil de kilometrage doit etre positif");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Le seuil de kilometrage doit etre positif");
         }
         return vehiculeRepository.findByKilometrageGreaterThanEqualOrderByKilometrageDesc(seuil)
                 .stream()
@@ -74,32 +99,6 @@ public class VehiculeService {
                         v.getStatut()
                 ))
                 .toList();
-    }
-
-    public Vehicule findEntity(Long id) {
-        return vehiculeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicule introuvable avec id=" + id));
-    }
-
-    private void applyRequest(Vehicule vehicule, VehiculeRequest request) {
-        vehicule.setImmatriculation(request.immatriculation());
-        vehicule.setModele(request.modele());
-        vehicule.setType(request.type());
-        vehicule.setKilometrage(request.kilometrage());
-        vehicule.setStatut(request.statut());
-        vehicule.setImageData(request.imageData());
-    }
-
-    private VehiculeResponse toResponse(Vehicule vehicule) {
-        return new VehiculeResponse(
-                vehicule.getId(),
-                vehicule.getImmatriculation(),
-                vehicule.getModele(),
-                vehicule.getType(),
-                vehicule.getKilometrage(),
-                vehicule.getStatut(),
-                vehicule.getImageData()
-        );
     }
 }
 

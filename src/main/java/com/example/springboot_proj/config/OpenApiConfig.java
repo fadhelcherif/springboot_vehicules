@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
                 contact = @Contact(name = "Equipe Fleet")
         ),
         servers = {
-                @Server(url = "http://localhost:8081", description = "Environnement local")
+                @Server(url = "http://localhost:8082", description = "Environnement local")
         }
 )
 public class OpenApiConfig {

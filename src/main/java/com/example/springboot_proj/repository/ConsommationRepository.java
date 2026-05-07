@@ -1,11 +1,13 @@
 package com.example.springboot_proj.repository;
 
-import com.example.springboot_proj.model.Consommation;
+import com.example.springboot_proj.entity.Consommation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface ConsommationRepository extends JpaRepository<Consommation, Long> {
 
     interface FuelCostProjection {

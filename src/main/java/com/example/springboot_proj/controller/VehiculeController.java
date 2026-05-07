@@ -1,8 +1,9 @@
 package com.example.springboot_proj.controller;
 
+import com.example.springboot_proj.dto.ApiResponseDTO;
 import com.example.springboot_proj.dto.MaintenanceAlertResponse;
-import com.example.springboot_proj.dto.VehiculeRequest;
-import com.example.springboot_proj.dto.VehiculeResponse;
+import com.example.springboot_proj.dto.VehiculeDTO;
+import com.example.springboot_proj.service.VehiculeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -11,109 +12,101 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import com.example.springboot_proj.service.VehiculeService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/vehicules")
 @Tag(name = "Vehicules", description = "CRUD des vehicules et suivi de maintenance preventive")
 public class VehiculeController {
 
-    private final VehiculeService vehiculeService;
-
-    public VehiculeController(VehiculeService vehiculeService) {
-        this.vehiculeService = vehiculeService;
-    }
+    @Autowired
+    private VehiculeService vehiculeService;
 
     @PostMapping
     @Operation(summary = "Creer un vehicule", description = "Ajoute un nouveau vehicule dans la flotte")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Vehicule cree", content = @Content(schema = @Schema(implementation = VehiculeResponse.class))),
+            @ApiResponse(responseCode = "201", description = "Vehicule cree", content = @Content(schema = @Schema(implementation = VehiculeDTO.class))),
             @ApiResponse(responseCode = "400", description = "Requete invalide")
     })
-    public ResponseEntity<VehiculeResponse> create(@RequestBody VehiculeRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(vehiculeService.create(request));
+    public ResponseEntity<ApiResponseDTO<VehiculeDTO>> create(@Valid @RequestBody VehiculeDTO dto) {
+        VehiculeDTO created = vehiculeService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.ok("Vehicule cree avec succes", created));
     }
 
     @GetMapping
     @Operation(summary = "Lister les vehicules", description = "Retourne tous les vehicules de la flotte")
-    @ApiResponse(responseCode = "200", description = "Liste des vehicules", content = @Content(array = @ArraySchema(schema = @Schema(implementation = VehiculeResponse.class))))
-    public List<VehiculeResponse> getAll() {
-        return vehiculeService.getAll();
+    @ApiResponse(responseCode = "200", description = "Liste des vehicules", content = @Content(array = @ArraySchema(schema = @Schema(implementation = VehiculeDTO.class))))
+    public ResponseEntity<ApiResponseDTO<List<VehiculeDTO>>> getAll() {
+        return ResponseEntity.ok(ApiResponseDTO.ok(vehiculeService.getAll()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Recuperer un vehicule", description = "Retourne un vehicule par son identifiant")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Vehicule trouve", content = @Content(schema = @Schema(implementation = VehiculeResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Vehicule trouve", content = @Content(schema = @Schema(implementation = VehiculeDTO.class))),
             @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
     })
-    public VehiculeResponse getById(@Parameter(description = "Identifiant du vehicule", example = "1") @PathVariable Long id) {
-        return vehiculeService.getById(id);
+    public ResponseEntity<ApiResponseDTO<VehiculeDTO>> getById(@Parameter(description = "Identifiant du vehicule", example = "1") @PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponseDTO.ok(vehiculeService.getById(id)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Mettre a jour un vehicule", description = "Modifie les informations d'un vehicule existant")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Vehicule mis a jour", content = @Content(schema = @Schema(implementation = VehiculeResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Vehicule mis a jour", content = @Content(schema = @Schema(implementation = VehiculeDTO.class))),
             @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
     })
-    public VehiculeResponse update(@Parameter(description = "Identifiant du vehicule", example = "1") @PathVariable Long id, @RequestBody VehiculeRequest request) {
-        return vehiculeService.update(id, request);
+    public ResponseEntity<ApiResponseDTO<VehiculeDTO>> update(@Parameter(description = "Identifiant du vehicule", example = "1") @PathVariable Long id, @Valid @RequestBody VehiculeDTO dto) {
+        return ResponseEntity.ok(ApiResponseDTO.ok("Mis a jour", vehiculeService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Supprimer un vehicule", description = "Supprime un vehicule par son identifiant")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Vehicule supprime"),
+            @ApiResponse(responseCode = "200", description = "Vehicule supprime"),
             @ApiResponse(responseCode = "404", description = "Vehicule introuvable")
     })
-    public ResponseEntity<Void> delete(@Parameter(description = "Identifiant du vehicule", example = "1") @PathVariable Long id) {
+    public ResponseEntity<ApiResponseDTO<Void>> delete(@Parameter(description = "Identifiant du vehicule", example = "1") @PathVariable Long id) {
         vehiculeService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.ok("Supprime avec succes", null));
     }
 
     @GetMapping("/maintenance/alerts")
     @Operation(summary = "Alertes maintenance preventive", description = "Retourne les vehicules dont le kilometrage depasse un seuil")
     @ApiResponse(responseCode = "200", description = "Liste des alertes", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MaintenanceAlertResponse.class))))
-    public List<MaintenanceAlertResponse> getMaintenanceAlerts(
+    public ResponseEntity<ApiResponseDTO<List<MaintenanceAlertResponse>>> getMaintenanceAlerts(
             @Parameter(description = "Seuil de kilometrage (par defaut 10000)", example = "10000")
             @RequestParam(required = false) Long thresholdKm) {
-        return vehiculeService.getMaintenanceAlerts(thresholdKm);
+        return ResponseEntity.ok(ApiResponseDTO.ok(vehiculeService.getMaintenanceAlerts(thresholdKm)));
     }
 
     @PostMapping(value = "/{id}/image", consumes = "multipart/form-data")
     @Operation(
-        summary = "Uploader une image pour le véhicule",
-        description = "Permet de charger une image (photo du véhicule) pour un véhicule existant."
+        summary = "Uploader une image pour le vehicule",
+        description = "Permet de charger une image (photo du vehicule) pour un vehicule existant."
     )
     @ApiResponses({
             @ApiResponse(
                 responseCode = "200",
-                description = "Image uploadée avec succès",
-                content = @Content(schema = @Schema(implementation = VehiculeResponse.class))
+                description = "Image uploadee avec succes",
+                content = @Content(schema = @Schema(implementation = VehiculeDTO.class))
             ),
-            @ApiResponse(responseCode = "404", description = "Véhicule introuvable"),
+            @ApiResponse(responseCode = "404", description = "Vehicule introuvable"),
             @ApiResponse(responseCode = "400", description = "Fichier invalide")
     })
-    public ResponseEntity<VehiculeResponse> uploadImage(
-            @Parameter(description = "ID du véhicule", example = "1")
+    public ResponseEntity<ApiResponseDTO<VehiculeDTO>> uploadImage(
+            @Parameter(description = "ID du vehicule", example = "1")
             @PathVariable Long id,
             @Parameter(
                 description = "Fichier image",
@@ -121,7 +114,7 @@ public class VehiculeController {
             )
             @RequestPart("file") MultipartFile file) throws IOException {
         String imageData = Base64.getEncoder().encodeToString(file.getBytes());
-        return ResponseEntity.ok(vehiculeService.updateImage(id, imageData));
+        return ResponseEntity.ok(ApiResponseDTO.ok("Image uploadee", vehiculeService.updateImage(id, imageData)));
     }
 }
 

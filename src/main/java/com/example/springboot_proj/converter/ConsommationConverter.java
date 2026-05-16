@@ -19,7 +19,6 @@ public class ConsommationConverter {
     @Autowired
     private VehiculeRepository vehiculeRepository;
 
-    // Entity → DTO (maps only ID, not full object)
     public ConsommationDTO toDto(Consommation consommation) {
         ConsommationDTO dto = new ConsommationDTO();
         dto.setId(consommation.getId());
@@ -30,7 +29,6 @@ public class ConsommationConverter {
         return dto;
     }
 
-    // DTO → Entity (fetches entity by ID)
     public Consommation fromDto(ConsommationDTO dto) {
         Consommation consommation = new Consommation();
         consommation.setId(dto.getId());
@@ -43,7 +41,6 @@ public class ConsommationConverter {
         return consommation;
     }
 
-    // List of entities → List of DTOs
     public List<ConsommationDTO> toDtoList(List<Consommation> list) {
         return list.stream()
                    .map(this::toDto)

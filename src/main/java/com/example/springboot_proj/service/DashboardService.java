@@ -4,6 +4,7 @@ import com.example.springboot_proj.dto.FuelCostByVehiculeResponse;
 import com.example.springboot_proj.dto.VehiculeActivityResponse;
 import com.example.springboot_proj.repository.ConsommationRepository;
 import com.example.springboot_proj.repository.MissionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,16 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 public class DashboardService {
 
-    private final ConsommationRepository consommationRepository;
-    private final MissionRepository missionRepository;
+    @Autowired
+    private ConsommationRepository consommationRepository;
 
-    public DashboardService(ConsommationRepository consommationRepository, MissionRepository missionRepository) {
-        this.consommationRepository = consommationRepository;
-        this.missionRepository = missionRepository;
-    }
+    @Autowired
+    private MissionRepository missionRepository;
 
     public List<FuelCostByVehiculeResponse> getFuelCostsByVehicule() {
         return consommationRepository.getFuelCostDashboard()

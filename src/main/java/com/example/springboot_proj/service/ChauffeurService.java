@@ -5,15 +5,11 @@ import com.example.springboot_proj.dto.ChauffeurDTO;
 import com.example.springboot_proj.entity.Chauffeur;
 import com.example.springboot_proj.repository.ChauffeurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 public class ChauffeurService {
 
     @Autowired
@@ -27,23 +23,22 @@ public class ChauffeurService {
     }
 
     public ChauffeurDTO getById(Long id) {
-        Chauffeur chauffeur = chauffeurRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Chauffeur introuvable avec id=" + id));
+        Chauffeur chauffeur = chauffeurRepository.findById(id).get();
         return chauffeurConverter.toDto(chauffeur);
     }
 
-    @Transactional
+    public void save(ChauffeurDTO dto) {
+        Chauffeur chauffeur = chauffeurConverter.fromDto(dto);
+        chauffeurRepository.save(chauffeur);
+    }
+
     public ChauffeurDTO create(ChauffeurDTO dto) {
         Chauffeur chauffeur = chauffeurConverter.fromDto(dto);
         return chauffeurConverter.toDto(chauffeurRepository.save(chauffeur));
     }
 
-    @Transactional
     public ChauffeurDTO update(Long id, ChauffeurDTO dto) {
-        Chauffeur chauffeur = chauffeurRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Chauffeur introuvable avec id=" + id));
+        Chauffeur chauffeur = chauffeurRepository.findById(id).get();
         chauffeur.setNom(dto.getNom());
         chauffeur.setPermis(dto.getPermis());
         chauffeur.setExperience(dto.getExperience());
@@ -51,20 +46,12 @@ public class ChauffeurService {
         return chauffeurConverter.toDto(chauffeurRepository.save(chauffeur));
     }
 
-    @Transactional
     public void delete(Long id) {
-        if (!chauffeurRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Chauffeur introuvable avec id=" + id);
-        }
         chauffeurRepository.deleteById(id);
     }
 
-    @Transactional
     public ChauffeurDTO updateImage(Long id, String imageData) {
-        Chauffeur chauffeur = chauffeurRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Chauffeur introuvable avec id=" + id));
+        Chauffeur chauffeur = chauffeurRepository.findById(id).get();
         chauffeur.setImageData(imageData);
         return chauffeurConverter.toDto(chauffeurRepository.save(chauffeur));
     }

@@ -9,15 +9,11 @@ import com.example.springboot_proj.repository.MissionRepository;
 import com.example.springboot_proj.repository.VehiculeRepository;
 import com.example.springboot_proj.repository.ChauffeurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 public class MissionService {
 
     @Autowired
@@ -37,50 +33,38 @@ public class MissionService {
     }
 
     public MissionDTO getById(Long id) {
-        Mission mission = missionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Mission introuvable avec id=" + id));
+        Mission mission = missionRepository.findById(id).get();
         return missionConverter.toDto(mission);
     }
 
-    @Transactional
-    public MissionDTO create(MissionDTO dto) {
-        Vehicule vehicule = vehiculeRepository.findById(dto.getVehiculeId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Vehicule introuvable avec id=" + dto.getVehiculeId()));
-        Chauffeur chauffeur = chauffeurRepository.findById(dto.getChauffeurId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Chauffeur introuvable avec id=" + dto.getChauffeurId()));
-
+    public void save(MissionDTO dto) {
         Mission mission = new Mission();
+        mission.setVehicule(vehiculeRepository.findById(dto.getVehiculeId()).get());
+        mission.setChauffeur(chauffeurRepository.findById(dto.getChauffeurId()).get());
+        mission.setPointDepart(dto.getPointDepart());
+        mission.setDestination(dto.getDestination());
+        mission.setDistance(dto.getDistance());
+        missionRepository.save(mission);
+    }
+
+    public MissionDTO create(MissionDTO dto) {
+        Mission mission = new Mission();
+        mission.setVehicule(vehiculeRepository.findById(dto.getVehiculeId()).get());
+        mission.setChauffeur(chauffeurRepository.findById(dto.getChauffeurId()).get());
+        mission.setPointDepart(dto.getPointDepart());
+        mission.setDestination(dto.getDestination());
+        mission.setDistance(dto.getDistance());
+
+        return missionConverter.toDto(missionRepository.save(mission));
+    }
+
+    public MissionDTO update(Long id, MissionDTO dto) {
+        Mission mission = missionRepository.findById(id).get();
+
+        Vehicule vehicule = vehiculeRepository.findById(dto.getVehiculeId()).get();
+        Chauffeur chauffeur = chauffeurRepository.findById(dto.getChauffeurId()).get();
         mission.setVehicule(vehicule);
         mission.setChauffeur(chauffeur);
-        mission.setPointDepart(dto.getPointDepart());
-        mission.setDestination(dto.getDestination());
-        mission.setDistance(dto.getDistance());
-
-        return missionConverter.toDto(missionRepository.save(mission));
-    }
-
-    @Transactional
-    public MissionDTO update(Long id, MissionDTO dto) {
-        Mission mission = missionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Mission introuvable avec id=" + id));
-
-        if (dto.getVehiculeId() != null) {
-            Vehicule vehicule = vehiculeRepository.findById(dto.getVehiculeId())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND, "Vehicule introuvable avec id=" + dto.getVehiculeId()));
-            mission.setVehicule(vehicule);
-        }
-
-        if (dto.getChauffeurId() != null) {
-            Chauffeur chauffeur = chauffeurRepository.findById(dto.getChauffeurId())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND, "Chauffeur introuvable avec id=" + dto.getChauffeurId()));
-            mission.setChauffeur(chauffeur);
-        }
 
         mission.setPointDepart(dto.getPointDepart());
         mission.setDestination(dto.getDestination());
@@ -89,12 +73,7 @@ public class MissionService {
         return missionConverter.toDto(missionRepository.save(mission));
     }
 
-    @Transactional
     public void delete(Long id) {
-        if (!missionRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Mission introuvable avec id=" + id);
-        }
         missionRepository.deleteById(id);
     }
 }

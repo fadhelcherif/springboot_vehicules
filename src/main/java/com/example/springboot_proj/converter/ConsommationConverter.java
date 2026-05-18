@@ -20,12 +20,9 @@ public class ConsommationConverter {
     private VehiculeRepository vehiculeRepository;
 
     public ConsommationDTO toDto(Consommation consommation) {
-        ConsommationDTO dto = new ConsommationDTO();
-        dto.setId(consommation.getId());
-        dto.setVehiculeId(consommation.getVehicule() != null ? consommation.getVehicule().getId() : null);
-        dto.setDate(consommation.getDate());
-        dto.setQuantiteCarburant(consommation.getQuantiteCarburant());
-        dto.setCoutTotal(consommation.getCoutTotal());
+        ConsommationDTO dto = modelMapper.map(consommation, ConsommationDTO.class);
+        dto.setVehiculeId(consommation.getVehicule() != null ?
+            consommation.getVehicule().getId() : null);
         return dto;
     }
 

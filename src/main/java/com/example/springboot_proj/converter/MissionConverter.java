@@ -26,13 +26,11 @@ public class MissionConverter {
     private ChauffeurRepository chauffeurRepository;
 
     public MissionDTO toDto(Mission mission) {
-        MissionDTO dto = new MissionDTO();
-        dto.setId(mission.getId());
-        dto.setVehiculeId(mission.getVehicule() != null ? mission.getVehicule().getId() : null);
-        dto.setChauffeurId(mission.getChauffeur() != null ? mission.getChauffeur().getId() : null);
-        dto.setPointDepart(mission.getPointDepart());
-        dto.setDestination(mission.getDestination());
-        dto.setDistance(mission.getDistance());
+        MissionDTO dto = modelMapper.map(mission, MissionDTO.class);
+        dto.setVehiculeId(mission.getVehicule() != null ?
+            mission.getVehicule().getId() : null);
+        dto.setChauffeurId(mission.getChauffeur() != null ?
+            mission.getChauffeur().getId() : null);
         return dto;
     }
 
